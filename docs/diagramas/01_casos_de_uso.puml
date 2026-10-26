@@ -1,0 +1,124 @@
+@startuml 01_Casos_de_Uso
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+title Casos de Uso (escopo do MVP) - Marketplace de Autopeças
+
+actor "Usuário\n(abstrato)" as U
+actor "Comprador" as C
+actor "Vendedor" as V
+actor "Administrador" as A
+actor "Sistema\n(jobs automáticos)" as S
+actor "API FIPE" as FIPE <<externo>>
+
+C --|> U
+V --|> U
+
+rectangle "Marketplace de Autopeças" {
+
+  package "Contas" {
+    usecase "Entrar com Google\n(primeiro login cria a conta)" as UC01
+    usecase "Editar ou excluir conta\n(LGPD)" as UC03
+    usecase "Gerir perfil de vendedor" as UC02
+  }
+
+  package "Chat e negociação (comum aos dois)" {
+    usecase "Ver lista de conversas\n(ordenar e filtrar)" as UC30
+    usecase "Conversar por texto" as UC31
+    usecase "Enviar imagem" as UC32
+    usecase "Responder à proposta\n(aceitar, recusar ou contrapropor)" as UC34
+    usecase "Bloquear ou denunciar" as UC37
+  }
+
+  package "Pedido de peça (comprador)" {
+    usecase "Criar pedido de peça" as UC11
+    usecase "Selecionar veículo\n(tipo, marca, modelo,\nversão e ano)" as UC10
+    usecase "Acompanhar Meus pedidos" as UC12
+    usecase "Cancelar, renovar,\nreabrir ou duplicar pedido" as UC13
+    usecase "Concluir pedido\n(Concluído ou Não comprei)" as UC14
+    usecase "Compartilhar meu WhatsApp" as UC35
+  }
+
+  package "Atuação, catálogo e vendas (vendedor)" {
+    usecase "Definir perfil de atuação" as UC20
+    usecase "Gerir catálogo de peças" as UC21
+    usecase "Definir compatibilidade\ndo item" as UC22
+    usecase "Ver ou ignorar\ncotações recebidas" as UC23
+    usecase "Enviar ou atualizar proposta" as UC33
+    usecase "Marcar proposta\ncomo Vendida" as UC36
+  }
+
+  package "Administração" {
+    usecase "Aprovar vendedor" as UC40
+    usecase "Tratar denúncias" as UC41
+    usecase "Gerir taxonomia de veículos\ne categorias de peças" as UC42
+  }
+
+  package "Automático" {
+    usecase "Sincronizar veículos" as UC50
+    usecase "Fazer matching do pedido" as UC51
+    usecase "Expirar pedidos e propostas" as UC52
+    usecase "Notificar (app e e-mail)" as UC53
+  }
+}
+
+' Casos de uso comuns (Comprador e Vendedor herdam de Usuário)
+U --> UC01
+U --> UC03
+U --> UC30
+U --> UC31
+U --> UC32
+U --> UC34
+U --> UC37
+
+' Comprador
+C --> UC11
+C --> UC12
+C --> UC13
+C --> UC14
+C --> UC35
+
+' Vendedor
+V --> UC02
+V --> UC20
+V --> UC21
+V --> UC23
+V --> UC33
+V --> UC36
+
+' Administrador
+A --> UC40
+A --> UC41
+A --> UC42
+
+' Sistema e externo
+S --> UC50
+S --> UC51
+S --> UC52
+S --> UC53
+FIPE --> UC50
+
+' Relações entre casos de uso
+UC11 ..> UC10 : <<include>>
+UC11 ..> UC51 : <<include>>
+UC21 ..> UC22 : <<include>>
+UC32 ..> UC31 : <<extend>>
+UC33 ..> UC31 : <<extend>>
+UC33 ..> UC53 : <<include>>
+
+note bottom of UC36
+  Só uma proposta Aceita pode virar Vendida.
+  Pagamento e entrega acontecem fora do sistema.
+end note
+
+note bottom of UC50
+  A consulta do usuário usa a base local.
+  A FIPE só é chamada pelo job de sincronização.
+end note
+
+legend right
+  Itens de Fase 2 e Futuro (garagem, pátio, avaliação,
+  push, comparação lado a lado, assinatura) não aparecem aqui.
+endlegend
+@enduml

@@ -1,0 +1,5 @@
+# IDE
+.idea/
+
+# Artefatos locais do fluxo de execução por subagentes
+.superpowers/

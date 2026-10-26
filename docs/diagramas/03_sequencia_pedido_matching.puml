@@ -1,0 +1,65 @@
+@startuml 03_Sequencia_Pedido_Matching
+skinparam shadowing false
+skinparam sequenceMessageAlign left
+autonumber
+
+title Sequência: criação do pedido e matching
+
+actor Comprador
+participant "App\n(web mobile-first)" as App
+participant "API" as API
+database "Banco" as DB
+queue "Fila de matching" as Fila
+participant "Motor de matching" as Match
+participant "Notificações" as Notif
+actor Vendedor
+
+== Escolha do veículo (base local, sem chamar a FIPE) ==
+Comprador -> App : escolhe tipo, marca, modelo, versão e ano
+App -> API : GET /veiculos (cascata)
+API -> DB : consulta taxonomia local
+DB --> API : opções
+API --> App : opções (p95 < 300 ms)
+
+== Criação do pedido ==
+Comprador -> App : descreve a peça, informa cidade/UF e envia
+App -> API : POST /pedidos
+API -> DB : valida limites anti-spam e grava pedido (Aberto)
+API -> Fila : enfileira matching(pedidoId)
+API --> App : 201 Pedido criado (resposta imediata)
+App --> Comprador : "Pedido enviado, procurando vendedores"
+
+== Matching (assíncrono, até 10 s em 95% dos casos) ==
+Fila -> Match : matching(pedidoId)
+
+group Match de catálogo
+  Match -> DB : itens ativos, de vendedores aprovados,\ncompatíveis com o veículo e com a peça
+  DB --> Match : itens
+  loop para cada item compatível
+    Match -> DB : cria Conversa (origem = Catálogo)\ne mensagem com o cartão do item
+  end
+end
+
+group Match de perfil
+  Match -> DB : vendedores aprovados cujo perfil cobre\nveículo, categoria e região\n(exclui quem já tem conversa)
+  DB --> Match : candidatos
+  Match -> Match : ranqueia (relevância, distância, atividade)\ne corta em N vendedores (padrão 30)
+  loop para cada vendedor selecionado
+    Match -> DB : cria Cotação (pedido visível na caixa do vendedor)
+  end
+end
+
+alt Nenhum item de catálogo e nenhum vendedor compatível
+  Match -> DB : mantém o pedido Aberto, sem conversas nem cotações
+  note right of Match
+    O pedido segue Aberto até expirar (7 dias).
+    Reavaliar quando entrar item novo é Fase 2.
+  end note
+else Há itens de catálogo ou vendedores compatíveis
+  Match -> Notif : eventos (conversas de catálogo, novas cotações)
+
+  == Entrega ==
+  Notif -> Comprador : ofertas de catálogo aparecem na lista de conversas\n(tempo real + notificação no app)
+  Notif -> Vendedor : nova cotação compatível\n(notificação no app e e-mail agrupado)
+end
+@enduml

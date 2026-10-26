@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: autopecas
+      POSTGRES_USER: autopecas
+      POSTGRES_PASSWORD: autopecas
+    ports:
+      # Só no loopback: o banco de desenvolvimento tem superusuário com senha pública, e sem o 127.0.0.1 o Docker
+      # o publicaria em todas as interfaces (qualquer pessoa na mesma rede conectaria).
+      - "127.0.0.1:5432:5432"
+    volumes:
+      # A partir do PostgreSQL 18 a imagem guarda os dados em /var/lib/postgresql.
+      - postgres-dados:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U autopecas -d autopecas"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  postgres-dados:

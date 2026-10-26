@@ -1,0 +1,34 @@
+@startuml 07_Containers_C4
+!include <C4/C4_Container>
+
+title Diagrama de Contêineres (Nível 2) - Marketplace de Autopeças
+
+Person(comprador, "Comprador", "Lança pedidos e negocia.")
+Person(vendedor, "Vendedor", "Recebe cotações, mantém o catálogo e negocia.")
+Person(admin, "Administrador", "Aprova vendedores e modera conteúdo.")
+
+System_Boundary(sistema, "Marketplace de Autopeças") {
+    Container(web, "Aplicação web", "Next.js, React, Tailwind CSS, shadcn/ui", "Interface mobile-first. Renderiza no servidor e no navegador.")
+    Container(api, "API", "Java 21, Spring Boot, Spring Modulith", "Regras de negócio, matching, chat em tempo real (SSE), sessão e autorização.")
+    ContainerDb(db, "Banco de dados", "PostgreSQL (Docker no dev)", "Domínio, sessões, eventos de domínio pendentes e busca textual.")
+    Container(storage, "Armazenamento de imagens", "MinIO no dev, S3-compatível em produção", "Fotos de pedidos, itens e chat, com miniaturas.")
+}
+
+System_Ext(fipe, "API FIPE", "Fonte de tipos, marcas, modelos e anos.")
+System_Ext(email, "Serviço de e-mail", "Mailpit no dev, SMTP transacional em produção.")
+System_Ext(google, "Google (OpenID Connect)", "Autentica a pessoa no login.")
+
+Rel(comprador, web, "Usa", "HTTPS")
+Rel(vendedor, web, "Usa", "HTTPS")
+Rel(admin, web, "Usa", "HTTPS")
+
+Rel(web, api, "Chama a API e assina o fluxo de eventos do chat", "JSON/HTTPS e SSE")
+Rel(api, db, "Lê e grava", "JDBC")
+Rel(api, storage, "Grava imagens e gera URLs assinadas", "API S3")
+Rel(api, fipe, "Sincroniza veículos (job agendado)", "HTTPS/JSON")
+Rel(api, email, "Envia e-mails", "SMTP")
+Rel(api, google, "Troca o código e valida o ID token (login)", "HTTPS/JSON")
+Rel(web, google, "Redireciona a pessoa para entrar", "HTTPS (navegação)")
+
+SHOW_LEGEND()
+@enduml

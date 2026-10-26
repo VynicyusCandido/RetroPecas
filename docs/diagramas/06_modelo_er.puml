@@ -1,0 +1,339 @@
+@startuml 06_Modelo_ER
+skinparam shadowing false
+skinparam linetype polyline
+hide circle
+left to right direction
+
+title Modelo de dados lógico (rascunho) - Marketplace de Autopeças
+
+' ---------- Contas ----------
+entity "Usuario" as Usuario {
+  * id : uuid <<PK>>
+  --
+  * google_sub : text <<unique>>
+  * email : text <<unique>>
+  * nome : text
+  * status : ativo | suspenso | excluido
+  * termos_versao_aceita : text
+  criado_em : timestamp
+}
+
+entity "PerfilVendedor" as PerfilVendedor {
+  * usuario_id : uuid <<PK, FK>>
+  --
+  * tipo : loja | desmanche | autonomo
+  * nome_comercial : text
+  * cpf_cnpj : text
+  * cidade : text
+  * uf : char(2)
+  * whatsapp : text
+  logo_url : text
+  * status : pendente | aprovado | reprovado | suspenso
+  aprovado_por : uuid <<FK>>
+  aprovado_em : timestamp
+}
+
+entity "AtuacaoVendedor" as Atuacao {
+  * id : uuid <<PK>>
+  --
+  * vendedor_id : uuid <<FK>>
+  * tipo_veiculo_id : int <<FK>>
+  marca_id : int <<FK>>
+  modelo_id : int <<FK>>
+  ano_ini : int
+  ano_fim : int
+  categoria_id : int <<FK>>
+  * alcance : cidade | estado | brasil
+}
+
+' ---------- Veículos (espelho da FIPE) ----------
+entity "TipoVeiculo" as TipoVeiculo {
+  * id : int <<PK>>
+  --
+  * nome : carro | moto | caminhao
+}
+
+entity "Marca" as Marca {
+  * id : int <<PK>>
+  --
+  * tipo_veiculo_id : int <<FK>>
+  * nome : text
+  fipe_id : text
+}
+
+entity "Modelo" as Modelo {
+  * id : int <<PK>>
+  --
+  * marca_id : int <<FK>>
+  * nome_familia : text
+}
+
+entity "Versao" as Versao {
+  * id : int <<PK>>
+  --
+  * modelo_id : int <<FK>>
+  * nome : text
+  fipe_id : text
+}
+
+entity "AnoVersao" as AnoVersao {
+  * id : int <<PK>>
+  --
+  * versao_id : int <<FK>>
+  * ano_modelo : int
+  combustivel : text
+  fipe_id : text
+}
+
+entity "CategoriaPeca" as Categoria {
+  * id : int <<PK>>
+  --
+  * nome : text
+  pai_id : int <<FK>>
+}
+
+' ---------- Catálogo ----------
+entity "ItemCatalogo" as Item {
+  * id : uuid <<PK>>
+  --
+  * vendedor_id : uuid <<FK>>
+  * categoria_id : int <<FK>>
+  * titulo : text
+  codigo_oem : text
+  * condicao : nova | usada | recondicionada
+  preco : numeric (nulo = sob consulta)
+  * quantidade : int
+  garantia : text
+  observacoes : text
+  * ativo : bool
+}
+
+entity "FotoItem" as FotoItem {
+  * id : uuid <<PK>>
+  --
+  * item_id : uuid <<FK>>
+  * url : text
+  * ordem : int
+}
+
+entity "CompatibilidadeItem" as Compat {
+  * id : uuid <<PK>>
+  --
+  * item_id : uuid <<FK>>
+  * marca_id : int <<FK>>
+  modelo_id : int <<FK>>
+  versao_id : int <<FK>>
+  * ano_ini : int
+  * ano_fim : int
+}
+
+' ---------- Pedido e cotação ----------
+entity "PedidoPeca" as Pedido {
+  * id : uuid <<PK>>
+  --
+  * comprador_id : uuid <<FK>>
+  * ano_versao_id : int <<FK>>
+  categoria_id : int <<FK>>
+  * descricao : text
+  codigo_oem : text
+  * condicao_aceita : nova | usada | recondicionada | qualquer
+  * cidade : text
+  * uf : char(2)
+  * alcance : cidade | estado | brasil
+  * status : aberto | em_negociacao | concluido | cancelado | expirado
+  resultado : vendido | sem_compra
+  motivo_sem_compra : text
+  * expira_em : timestamp
+  criado_em : timestamp
+}
+
+entity "FotoPedido" as FotoPedido {
+  * id : uuid <<PK>>
+  --
+  * pedido_id : uuid <<FK>>
+  * url : text
+}
+
+entity "Cotacao" as Cotacao {
+  * pedido_id : uuid <<PK, FK>>
+  * vendedor_id : uuid <<PK, FK>>
+  --
+  * status : nova | ignorada | respondida
+  relevancia : int
+  distancia_km : numeric
+}
+
+' ---------- Chat ----------
+entity "Conversa" as Conversa {
+  * id : uuid <<PK>>
+  --
+  * pedido_id : uuid <<FK>>
+  * vendedor_id : uuid <<FK>>
+  * origem : catalogo | cotacao
+  * status : ativa | arquivada | bloqueada
+  * somente_leitura : bool
+  * contato_compartilhado : bool
+  ..
+  unique (pedido_id, vendedor_id)
+}
+
+entity "Mensagem" as Mensagem {
+  * id : uuid <<PK>>
+  --
+  * conversa_id : uuid <<FK>>
+  autor_id : uuid <<FK>>
+  * tipo : texto | imagem | proposta | cartao_catalogo | sistema
+  texto : text
+  item_catalogo_id : uuid <<FK>>
+  proposta_id : uuid <<FK>>
+  * id_cliente : uuid (idempotência)
+  * criada_em : timestamp
+  lida_em : timestamp
+}
+
+entity "AnexoMensagem" as Anexo {
+  * id : uuid <<PK>>
+  --
+  * mensagem_id : uuid <<FK>>
+  * url : text
+  largura : int
+  altura : int
+}
+
+entity "Proposta" as Proposta {
+  * id : uuid <<PK>>
+  --
+  * conversa_id : uuid <<FK>>
+  * pedido_id : uuid <<FK>> (desnormalizado, p/ RN-12)
+  * status : enviada | contraproposta | aceita | vendida | recusada | retirada | expirada
+  * versao_atual : int
+  criada_em : timestamp
+}
+
+entity "PropostaVersao" as PropostaVersao {
+  * proposta_id : uuid <<PK, FK>>
+  * numero : int <<PK>>
+  --
+  * autor_id : uuid <<FK>>
+  * valor : numeric
+  * quantidade : int
+  * condicao : nova | usada | recondicionada
+  garantia : text
+  prazo_disponibilidade : text
+  * validade_ate : timestamp
+  observacao : text
+  criada_em : timestamp
+  ..
+  imutável
+}
+
+' ---------- Suporte ----------
+entity "Notificacao" as Notificacao {
+  * id : uuid <<PK>>
+  --
+  * usuario_id : uuid <<FK>>
+  * tipo : text
+  referencia : text
+  * lida : bool
+  criada_em : timestamp
+}
+
+entity "Denuncia" as Denuncia {
+  * id : uuid <<PK>>
+  --
+  * denunciante_id : uuid <<FK>>
+  * alvo_tipo : usuario | mensagem | item | conversa
+  * alvo_id : uuid
+  * motivo : text
+  * status : aberta | tratada
+  tratada_por : uuid <<FK>>
+}
+
+entity "BloqueioUsuario" as Bloqueio {
+  * bloqueador_id : uuid <<PK, FK>>
+  * bloqueado_id : uuid <<PK, FK>>
+  --
+  criado_em : timestamp
+}
+
+entity "AuditoriaAdmin" as Auditoria {
+  * id : uuid <<PK>>
+  --
+  * admin_id : uuid <<FK>>
+  * acao : text
+  * alvo : text
+  criada_em : timestamp
+}
+
+' ---------- Fase 2 ----------
+entity "Avaliacao  <<Fase 2>>" as Avaliacao {
+  * id : uuid <<PK>>
+  --
+  * pedido_id : uuid <<FK>>
+  * vendedor_id : uuid <<FK>>
+  * nota : int (1 a 5)
+  comentario : text
+}
+
+entity "VeiculoPatio  <<Fase 2>>" as Patio {
+  * id : uuid <<PK>>
+  --
+  * vendedor_id : uuid <<FK>>
+  * ano_versao_id : int <<FK>>
+  observacao : text
+}
+
+' ---------- Relações ----------
+Usuario ||--o| PerfilVendedor
+PerfilVendedor ||--o{ Atuacao
+PerfilVendedor ||--o{ Item
+PerfilVendedor ||--o{ Cotacao
+PerfilVendedor ||--o{ Conversa
+
+TipoVeiculo ||--o{ Marca
+Marca ||--o{ Modelo
+Modelo ||--o{ Versao
+Versao ||--o{ AnoVersao
+Categoria |o--o{ Categoria : pai
+
+Item ||--o{ FotoItem
+Item ||--o{ Compat
+Item |o--o{ Mensagem : cartão de catálogo
+
+Usuario ||--o{ Pedido : comprador
+AnoVersao ||--o{ Pedido
+Categoria |o--o{ Pedido
+Pedido ||--o{ FotoPedido
+Pedido ||--o{ Cotacao
+Pedido ||--o{ Conversa
+
+Conversa ||--o{ Mensagem
+Mensagem ||--o{ Anexo
+Conversa ||--o{ Proposta
+Proposta ||--|{ PropostaVersao
+Proposta |o--o{ Mensagem
+
+Usuario ||--o{ Notificacao
+Usuario ||--o{ Denuncia : denunciante
+Usuario ||--o{ Bloqueio : bloqueador
+Usuario ||--o{ Auditoria : admin
+
+Pedido |o--o{ Avaliacao
+PerfilVendedor ||--o{ Patio
+
+note bottom of Proposta
+  Regra RN-12: no máximo uma Proposta
+  com status "vendida" por pedido
+  (índice único parcial por pedido).
+end note
+
+note bottom of Cotacao
+  Cotação = o pedido visto na caixa do vendedor.
+  Fica sem Conversa até o vendedor responder.
+end note
+
+note bottom of AnoVersao
+  Taxonomia espelhada da FIPE, mantida por job.
+  Curadoria de "nome_familia" feita pelo admin (risco R1).
+end note
+@enduml
