@@ -3,3 +3,7 @@
 
 # Artefatos locais do fluxo de execução por subagentes
 .superpowers/
+
+# BMad (configuração e artefatos locais)
+_bmad/
+_bmad-output/

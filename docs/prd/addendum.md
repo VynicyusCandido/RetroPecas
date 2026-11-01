@@ -13,7 +13,7 @@ Material do usuário que pertence a UX/design e não ao corpo do PRD.
 
 ## Catálogo de zonas e partes do veículo (carros)
 
-Usado na busca por zona (RF-11) e no cadastro da parte (RF-06). Itens marcados com (*) foram acrescentados pelo assistente e precisam de aprovação.
+Usado na busca por zona (RF-11) e no cadastro da parte (RF-06). Itens marcados com (*) foram acrescentados pelo assistente e já foram aprovados pelo usuário.
 
 - **Frente:** capô, farol, parachoque dianteiro, pisca, farol de milha, grade, esguicho, parabrisa.
 - **Traseira:** porta-malas, lanterna, parachoque traseiro, parabrisa traseiro, spoiler.

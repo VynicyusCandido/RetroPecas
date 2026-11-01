@@ -1,0 +1,67 @@
+- id: "1"
+  title: Fundação técnica, API e deploy
+  description: >-
+    Esqueleto de servidor e interface, banco de produção, migrações, CI/CD, ambientes dev e prod e hospedagem pública
+    (restrições e RNF-12, RNF-20..23).
+  done_checkpoint: true
+  invoke_dev_with: >-
+    TDD desde o início. Sem SQLite/H2 nem BaaS; hospedagem fora da lista "Não usar" do addendum. API independente da tela.
+- id: "2"
+  title: Conta com Google e CPF
+  description: >-
+    CAP-1: login Google (estado, nonce, PKCE), CPF por dígito verificador e único, JWT, aceite dos Termos, edição e exclusão de conta, alternância Comprar/Vender.
+- id: "3"
+  title: Catálogo do vendedor
+  description: >-
+    CAP-2: cadastro de peça e de veículo inteiro (parcial ou completo), até 5 fotos, edição, exclusão e marca de vendido.
+  invoke_dev_with: >-
+    Fotos sem EXIF/GPS, validadas por tipo real e tamanho (RNF-17, RNF-18). Catálogo de zonas e partes está no addendum.
+- id: "4"
+  title: Busca por zona, filtros e veículo
+  description: >-
+    CAP-3: sugestão de marca, modelo e versão, escolha por zona e parte, filtros e navegação só pelo veículo.
+  invoke_dev_with: >-
+    Busca ignora maiúsculas e acentos (R5). Sem busca por texto livre.
+- id: "5"
+  title: Pedido por demanda
+  description: >-
+    CAP-4: criar, editar, renovar, cancelar e duplicar pedido com faixa de valor obrigatória, validade de 7 dias, limites 10 abertos e 20 por dia e expiração.
+  spec_checkpoint: true
+- id: "6"
+  title: Chat de texto e caixas de conversa
+  description: >-
+    CAP-6: conversa por anúncio ou aceite de pedido, caixas Compras e Vendas, cabeçalho e perfil da conversa, bloquear, denunciar e alertas contra golpe.
+  spec_checkpoint: true
+  invoke_dev_with: >-
+    Mensagem gravada antes da confirmação e reenvio sem duplicar (RNF-08). Teste de acesso indevido por terceiro (RNF-15).
+- id: "7"
+  title: Aviso de compatibilidade
+  description: >-
+    CAP-5: casar pedido com itens (marca, modelo, parte, ano na faixa), limitar a 30 avisados, aceitar ou ignorar, sem avisar o próprio criador, e enviar o aviso também por e-mail.
+  spec_checkpoint: true
+  done_checkpoint: true
+  invoke_dev_with: >-
+    Regra de compatibilidade exata em RF-16; cobrir os casos do critério de aceite 15. Aviso no app em até 10 s p95 e e-mail ao vendedor (o desktop não é lido o tempo todo). Ao fim, fazer um teste rápido de usabilidade do fluxo pedido, aviso e conversa.
+- id: "8"
+  title: Fechamento e avaliação de perfil
+  description: >-
+    CAP-7: modal Fechado/Não fechado ao encerrar com mais de 10 mensagens, avaliação por estrelas e X, resposta do dono, perfil com nota e catálogo, venda marcada.
+  done_checkpoint: true
+- id: "9"
+  title: Notificações com contador
+  description: >-
+    CAP-8: notificações no app (e e-mail do aviso de pedido, ver história 7) de aviso de pedido, mensagem, resposta a avaliação e pedido de avaliação.
+- id: "10"
+  title: Moderação e contestação
+  description: >-
+    CAP-9: denúncia com motivos e estados, suspensão e bloqueio, contestação em até 7 dias, acesso ao CPF com auditoria.
+  invoke_dev_with: >-
+    CPF criptografado; todo acesso do administrador gera registro de auditoria (RNF-16).
+- id: "11"
+  title: Painel de métricas do administrador
+  description: >-
+    CAP-10: conversas encerradas e % Fechado, nota média, pedidos criados e atendidos, denúncias por motivo e estado.
+- id: "12"
+  title: Usabilidade, acessibilidade e fechamento da v1
+  description: >-
+    Teste de usabilidade documentado (RNF-24), WCAG 2.1 AA nos fluxos principais, medição das metas de desempenho e checagem dos 17 critérios de aceite.

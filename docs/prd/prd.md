@@ -134,7 +134,7 @@ Os IDs são globais e estáveis. Os requisitos descrevem o que o sistema faz, n�
 
 - **RF-14** O comprador cria um **pedido** com marca, modelo, versão e **ano** do veículo (um só) e a **parte** procurada, ou só o veículo quando procura um carro inteiro. A **faixa de valor é obrigatória** (mínimo menor ou igual ao máximo), e a localização também. Sem faixa de valor, o pedido não é criado. A faixa é visível só a quem foi avisado. Cada usuário pode ter no máximo **10 pedidos abertos** e criar no máximo **20 por dia** (RN-06).
 - **RF-15** O pedido vale **7 dias** e pode ser renovado. O comprador o edita antes da primeira resposta, cancela e duplica.
-- **RF-16** O sistema **avisa** quem tem item compatível cadastrado. Um item é **compatível** quando **marca, modelo e parte** são iguais e o **ano do pedido está dentro da faixa de anos do item**. A **versão não conta**. Quem tem um **veículo inteiro** do mesmo marca, modelo e ano também é avisado do pedido de uma peça dele e, ao aceitar, confere se a peça ainda está lá. O aviso mostra veículo, peça, faixa de valor e região. Ninguém recebe aviso do próprio pedido, mesmo com itens compatíveis em outro "chapéu" da mesma conta. Cada pedido avisa **no máximo 30 vendedores**, dos itens mais recentes para os mais antigos.
+- **RF-16** O sistema **avisa** quem tem item compatível cadastrado. Um item é **compatível** quando **marca, modelo e parte** são iguais e o **ano do pedido está dentro da faixa de anos do item**. A **versão não conta**. Quem tem um **veículo inteiro** da mesma marca, modelo e ano também é avisado do pedido de uma peça dele e, ao aceitar, confere se a peça ainda está lá. O aviso mostra veículo, peça, faixa de valor e região. Ninguém recebe aviso do próprio pedido, mesmo com itens compatíveis em outro "chapéu" da mesma conta. Cada pedido avisa **no máximo 30 vendedores**, dos itens mais recentes para os mais antigos.
 - **RF-17** Quem foi avisado **aceita** (a conversa abre) ou **ignora** (o pedido some só da caixa dele). Antes de decidir, o vendedor avisado vê do pedido o **nome da peça**, a **cidade** e a **faixa de valor** escolhida pelo comprador.
 - **RF-18** Pedido sem renovação **expira** ao fim do prazo: sai dos avisos e das caixas, e as conversas dele ficam somente leitura.
 
@@ -144,7 +144,7 @@ Os IDs são globais e estáveis. Os requisitos descrevem o que o sistema faz, n�
 - **RF-20** O chat tem **só texto**, com estado enviado e lido. Ninguém envia foto no chat: as imagens são as que o vendedor colocou no anúncio. Para ver mais imagens, as pessoas combinam **fora da aplicação**.
 - **RF-21** Cada usuário tem a caixa **Compras**, sempre disponível, e a caixa **Vendas**, que só aparece para quem tem item cadastrado.
 - **RF-22** O chat mostra alertas fixos contra golpe e permite **bloquear** e **denunciar** o outro usuário (RF-35). Bloquear tira a conversa das caixas e impede nova conversa e novos avisos entre os dois. Conversa com pedido expirado ou conta suspensa fica somente leitura.
-- **RF-23** O **cabeçalho da conversa** (como no WhatsApp) mostra a **foto do item** ao lado do **nome da peça**, o **nome do vendedor** abaixo e a **localização** ao lado, mais um **botão com uma estrela** que leva à avaliação do perfil da outra pessoa. O botão só fica habilitado depois de 10 mensagens (RF-29).
+- **RF-23** O **cabeçalho da conversa** (como no WhatsApp) mostra a **foto do item** ao lado do **nome da peça**, o **nome do vendedor** abaixo e a **localização** ao lado, mais um **botão com uma estrela** que leva à avaliação do perfil da outra pessoa. O botão só fica habilitado com mais de 10 mensagens (RF-29).
 - **RF-24** Abrir o **perfil da conversa** (tocando no cabeçalho) mostra as **demais fotos do item** e o nome do vendedor, que pode ser aberto para ver o perfil dele.
 - **RF-25** O **perfil do usuário** mostra o nome e a imagem, a nota, os comentários e o **catálogo** dele, ao lado ou abaixo do nome.
 - **RF-26** A plataforma não processa nem registra pagamento ou entrega.
@@ -159,7 +159,7 @@ Os IDs são globais e estáveis. Os requisitos descrevem o que o sistema faz, n�
 
 ### 3.7 Notificações e moderação
 
-- **RF-32** O app tem **notificações** com contador: aviso de pedido, mensagem, resposta a avaliação e pedido de avaliação.
+- **RF-32** O app tem **notificações** com contador: aviso de pedido, mensagem, resposta a avaliação e pedido de avaliação. O **aviso de pedido** também é enviado por **e-mail** ao vendedor (o e-mail verificado do login Google).
 - **RF-33** O administrador trata denúncias (RF-35) e avaliações, remove conteúdo indevido e suspende contas. Conta suspensa não entra, não publica e não recebe aviso.
 - **RF-34** O administrador só acessa o CPF em **denúncia grave ou ordem judicial**, e cada acesso é registrado em auditoria.
 - **RF-35** Qualquer usuário **denuncia** outro usuário, um anúncio, uma avaliação ou uma conversa, escolhendo um **motivo** e escrevendo uma **mensagem**. Motivos: preço fora da realidade, chantagem, golpe, xingamento ou ofensa, ameaça ou assédio, anúncio falso (foto ou peça que não existe), perfil falso, spam ou propaganda, conteúdo ilegal e outro.
