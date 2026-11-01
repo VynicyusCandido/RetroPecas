@@ -47,7 +47,7 @@ O sucesso é medido pela **nota dos perfis depois da conversa** e pela **confirm
 
 ### Fora do escopo desta visão
 
-Pagamento, frete, nota fiscal, custódia e disputa. Certificação de origem das peças. Preço de referência de peças e lista oficial de veículos (FIPE).
+Pagamento, frete, nota fiscal, custódia e disputa. Certificação de origem das peças. Preço de referência de peças. Lista oficial de veículos (FIPE): marca, modelo, versão e ano são digitados pelo usuário.
 
 ## 2. Modelo de usuário
 
