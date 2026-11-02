@@ -7,3 +7,9 @@
 # BMad (configuração e artefatos locais)
 _bmad/
 _bmad-output/
+
+# Arquivos auxiliares de docs (mantém só prd.md e SPEC.md versionados)
+docs/prd/.memlog.md
+docs/prd/addendum.md
+docs/spec/.memlog.md
+docs/spec/stories.yaml
